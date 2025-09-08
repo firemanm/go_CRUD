@@ -6,8 +6,9 @@ import (
 	"os"
 	"time"
 
-	"go-crud-app/database"
 	"go-crud-app/handlers"
+
+	"github.com/firemanm/go_CRUD/database"
 
 	"github.com/gorilla/mux"
 	"github.com/joho/godotenv"
