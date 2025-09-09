@@ -1,0 +1,38 @@
+global:
+  postgresql:
+    auth:
+      username: "user00"
+      password: "Pass@word1"
+      database: "mydb1"
+      postgresPassword: "Pass@word2"
+
+primary:
+  persistence:
+    enabled: true
+    existingClaim: "pg-pvc"  # existing PVC
+
+  resources:
+    requests:
+      memory: "512Mi"
+      cpu: "250m"
+    limits:
+      memory: "1Gi"
+      cpu: "500m"
+
+  service:
+    type: ClusterIP
+#    port: 5432
+
+readReplicas:
+  enabled: false  # True is for for HA
+
+volumePermissions:
+  enabled: true  # Required for some storage classes
+
+metrics:
+  enabled: true  # Enable Prometheus metrics - to use on next homework
+
+# Use existing PV/PVC:
+#  existingVolumes:
+#    enabled: true
+#    persistentVolumeClaim: "pg-pvc"
