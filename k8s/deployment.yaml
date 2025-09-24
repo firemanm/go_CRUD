@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: go-crud-app
-        image: go-crud-app:latest
+        image: firemanm/go-crud-app:latest
         ports:
         - containerPort: 8080
         env:
@@ -42,7 +42,7 @@ spec:
           valueFrom:
             configMapKeyRef:
               name: go-crud-app-config
-              key: PORT
+              key: DB_PORT
         - name: DB_USER
           valueFrom:
             secretKeyRef:
@@ -53,42 +53,3 @@ spec:
             secretKeyRef:
               name: go-crud-app-secret
               key: DB_PASSWORD
----
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: postgres
-spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app: postgres
-  template:
-    metadata:
-      labels:
-        app: postgres
-    spec:
-      containers:
-      - name: postgres
-        image: postgres:15-alpine
-        ports:
-        - containerPort: 5432
-        env:
-        - name: POSTGRES_DB
-          value: "crudapp"
-        - name: POSTGRES_USER
-          valueFrom:
-            secretKeyRef:
-              name: go-crud-app-secret
-              key: DB_USER
-        - name: POSTGRES_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: go-crud-app-secret
-              key: DB_PASSWORD
-        volumeMounts:
-        - name: postgres-storage
-          mountPath: /var/lib/postgresql/data
-      volumes:
-      - name: postgres-storage
-        emptyDir: {}

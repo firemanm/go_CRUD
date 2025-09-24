@@ -1,9 +1,13 @@
+
 kubectl apply -f storage.yaml
 # check state
 kubectl get pv,pvc,storageclass --all-namespaces
+# helm install
+sudo dnf install helm
 
 # create catalog on master node - minikube in my case
 minikube ssh
+sudo mkdir -p /data/postgresql
 
 # Set appropriate permissions (PostgreSQL typically runs as user 999)
 sudo chown -R 999:999 /data/postgresql
@@ -41,3 +45,101 @@ kubectl port-forward svc/my-postgresql 5432:5432
 # Connect using psql
 PGPASSWORD=$(kubectl get secret my-postgresql -o jsonpath='{.data.password}' | base64 -d) \
 psql -h localhost -U user00 -d mydb1
+
+# build and push
+docker build -t firemanm/go-crud-app .
+docker push firemanm/go-crud-app 
+
+# deploy app
+kubectl apply -f configmap.yaml - f secret.yaml
+kubectl apply -f deployment.yaml
+kubectl apply -f svc.yaml
+
+minikube addons enable ingress
+kubectl apply -f ingress.yaml
+
+minikube tunnel
+
+# monitor logs
+kubectl logs -f deployment/go-crud-app --all-containers=true --prefix --timestamps
+
+# create user
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: postgres
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: postgres
+  template:
+    metadata:
+      labels:
+        app: postgres
+    spec:
+      containers:
+      - name: postgres
+        image: postgres:15-alpine
+        ports:
+        - containerPort: 5432
+        env:
+        - name: POSTGRES_DB
+          value: "crudapp"
+        - name: POSTGRES_USER
+          valueFrom:
+            secretKeyRef:
+              name: go-crud-app-secret
+              key: DB_USER
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: go-crud-app-secret
+              key: DB_PASSWORD
+        volumeMounts:
+        - name: postgres-storage
+          mountPath: /var/lib/postgresql/data
+      volumes:
+      - name: postgres-storage
+        emptyDir: {}
+
+
+
+
+        ---
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres-service
+spec:
+  selector:
+    app: postgres
+  ports:
+  - port: 5432
+    targetPort: 5432

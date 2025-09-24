@@ -15,42 +15,40 @@ import (
 )
 
 func main() {
-	// Загрузка .env файла (для локальной разработки)
+	// Load .env for local development
 	godotenv.Load()
 
-	// Инициализация базы данных
+	// DB init
 	db, err := database.InitDB()
 	if err != nil {
 		log.Fatal("Failed to initialize database:", err)
 	}
 	defer db.Close()
 
-	// Создание таблицы
+	// table create
 	err = database.CreateTable(db)
 	if err != nil {
 		log.Fatal("Failed to create table:", err)
 	}
 
-	// Инициализация обработчиков
+	// handlers init
 	userHandler := handlers.NewUserHandler(db)
 
-	// Настройка маршрутов
+	// mux routes init
 	router := mux.NewRouter()
-
-	// User routes
 	router.HandleFunc("/users", userHandler.GetUsers).Methods("GET")
 	router.HandleFunc("/users/{id}", userHandler.GetUser).Methods("GET")
 	router.HandleFunc("/users", userHandler.CreateUser).Methods("POST")
 	router.HandleFunc("/users/{id}", userHandler.UpdateUser).Methods("PUT")
 	router.HandleFunc("/users/{id}", userHandler.DeleteUser).Methods("DELETE")
 
-	// Health check
+	// health check handler
 	router.HandleFunc("/health", func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
 		w.Write([]byte("OK"))
 	}).Methods("GET")
 
-	// Запуск сервера
+	// run server
 	port := os.Getenv("PORT")
 	if port == "" {
 		port = "8080"

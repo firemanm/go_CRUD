@@ -3,8 +3,9 @@ kind: ConfigMap
 metadata:
   name: go-crud-app-config
 data:
-  DB_HOST: "postgres-service"
+  DB_HOST: "my-postgresql.default.svc.cluster.local"
   DB_PORT: "5432"
-  DB_NAME: "crudapp"
+  DB_NAME: mydb1
   DB_SSLMODE: "disable"
-  PORT: "8080"
+  DB_PORT: "5432"
+    
