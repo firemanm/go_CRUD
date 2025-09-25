@@ -3,6 +3,7 @@ package main
 import (
 	"log"
 	"net/http"
+
 	//"os"
 	"time"
 
@@ -36,12 +37,12 @@ func main() {
 
 	// mux routes init
 	router := mux.NewRouter()
-	router.HandleFunc("/api/users", userHandler.GetUsers).Methods("GET")
-	router.HandleFunc("/api/users/{id}", userHandler.GetUser).Methods("GET")
-	router.HandleFunc("/api/users", userHandler.CreateUser).Methods("POST")
-	router.HandleFunc("/api/users/{id}", userHandler.UpdateUser).Methods("PUT")
-	router.HandleFunc("/api/users/{id}", userHandler.DeleteUser).Methods("DELETE")
-	log.Printf("Routes registered...")
+	router.HandleFunc("/users", userHandler.GetUsers).Methods("GET")
+	router.HandleFunc("/users/{id}", userHandler.GetUser).Methods("GET")
+	router.HandleFunc("/users", userHandler.CreateUser).Methods("POST")
+	router.HandleFunc("/users/{id}", userHandler.UpdateUser).Methods("PUT")
+	router.HandleFunc("/users/{id}", userHandler.DeleteUser).Methods("DELETE")
+	log.Printf("Routes registered through /users...")
 
 	// health check handler
 	router.HandleFunc("/health", func(w http.ResponseWriter, r *http.Request) {

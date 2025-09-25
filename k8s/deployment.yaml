@@ -14,7 +14,8 @@ spec:
     spec:
       containers:
       - name: go-crud-app
-        image: firemanm/go-crud-app:latest
+        image: firemanm/go-crud-app:v2
+        imagePullPolicy: Always
         ports:
         - containerPort: 8080
         env:
