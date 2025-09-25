@@ -1,70 +1,76 @@
+# Once per minikube installation
+minikube addons enable ingress
+minikube dashboard
 
-kubectl apply -f storage.yaml
-# check state
-kubectl get pv,pvc,storageclass --all-namespaces
-# helm install
-sudo dnf install helm
-
-# create catalog on master node - minikube in my case
+# Create data catalog for Postgre on control plane
 minikube ssh
 sudo mkdir -p /data/postgresql
-
-# Set appropriate permissions (PostgreSQL typically runs as user 999)
 sudo chown -R 999:999 /data/postgresql
 sudo chmod -R 755 /data/postgresql
 
-# apply PV spec
-kubectl apply -f pv.yaml
+# Prepare infra - not always needed
+kubectl apply -f storage.yaml 
 
-# apply PV spec
+# Partition for PostgreSQL
+kubectl apply -f pv.yaml
 kubectl apply -f pvc.yaml
 
-# custom values file for PostgreSQL in pg_values.yaml
-# install it on custom namespace
-# kubectl create namespace pg-dbs
+# Install it with parameters
 helm install my-postgresql oci://registry-1.docker.io/bitnamicharts/postgresql -f pg_values.yaml 
-# Add -n pg-dbs to install in namespace
 
-# manipulating
-helm uninstall my-postgresql
-helm upgrade my-postgresql
+# Deploy app etc
+kubectl apply -f configmap.yaml
+kubectl apply -f secret.yaml
+kubectl apply -f deployment.yaml
+kubectl apply -f svc.yaml
+kubectl apply -f ingress.yaml
 
-# check
-kubectl get pods
-kubectl get pvc
-kubectl get svc
-helm list
-
-# check
-# Get the password
-kubectl get secret my-postgresql -o jsonpath='{.data.password}' | base64 -d
-
-# Port forward for local access
-kubectl port-forward svc/my-postgresql 5432:5432
-
-# Connect using psql
-PGPASSWORD=$(kubectl get secret my-postgresql -o jsonpath='{.data.password}' | base64 -d) \
-psql -h localhost -U user00 -d mydb1
-
-# build and push
-docker build -t firemanm/go-crud-app .
-docker push firemanm/go-crud-app 
-
-# deploy app
-kubectl apply -f configmap.yaml, -f secret.yaml, -f deployment.yaml, apply -f svc.yaml, -f ingress.yaml
-
-# enable before
-minikube addons enable ingress
-
+# to view from localhost - not always needed
 minikube tunnel
 
-# monitor logs
+# view logs in separate shell
 kubectl logs -f deployment/go-crud-app --all-containers=true --prefix --timestamps
 
-# create user
+# test it
+curl -H "Host: arch.homework" http://$(minikube ip)/users
+curl -H "Host: arch.homework" http://$(minikube ip)/health
 
+# create data, test methods
+curl -X POST http://$(minikube ip)/users \
+  -H "Content-Type: application/json" \
+  -H "Host: arch.homework" \
+  -d '{"name": "Mikhail Pavlov", "email": "firemanm@gmail.com", "age": 52}'
 
+curl -X GET http://$(minikube ip)/users/1 \
+  -H "Content-Type: application/json" \
+  -H "Host: arch.homework"
 
+curl -H "Host: arch.homework" http://$(minikube ip)/users
+
+curl -X GET http://$(minikube ip)/users/7 \
+  -H "Content-Type: application/json" \
+  -H "Host: arch.homework"
+
+curl -X POST http://$(minikube ip)/users \
+  -H "Content-Type: application/json" \
+  -H "Host: arch.homework" \
+  -d '{"name": "Peter Nilopv", "email": "pnilov@gmail.com", "age": 30}'
+
+curl -X POST http://$(minikube ip)/users \
+  -H "Content-Type: application/json" \
+  -H "Host: arch.homework" \
+  -d '{"name": "Check Duplicate", "email": "firemanm@gmail.com", "age": 0}'
+
+curl -X PUT http://$(minikube ip)/users/1 \
+  -H "Content-Type: application/json" \
+  -H "Host: arch.homework" \
+  -d '{"name": "Check Put", "email": "firemanmCP@gmail.com", "age": 0}'
+
+curl -X DELETE http://$(minikube ip)/users/1 \
+  -H "Content-Type: application/json" \
+  -H "Host: arch.homework"
+
+curl -H "Host: arch.homework" http://$(minikube ip)/users
 
 
 
