@@ -36,11 +36,11 @@ func main() {
 
 	// mux routes init
 	router := mux.NewRouter()
-	router.HandleFunc("/users", userHandler.GetUsers).Methods("GET")
-	router.HandleFunc("/users/{id}", userHandler.GetUser).Methods("GET")
-	router.HandleFunc("/users", userHandler.CreateUser).Methods("POST")
-	router.HandleFunc("/users/{id}", userHandler.UpdateUser).Methods("PUT")
-	router.HandleFunc("/users/{id}", userHandler.DeleteUser).Methods("DELETE")
+	router.HandleFunc("/api/users", userHandler.GetUsers).Methods("GET")
+	router.HandleFunc("/api/users/{id}", userHandler.GetUser).Methods("GET")
+	router.HandleFunc("/api/users", userHandler.CreateUser).Methods("POST")
+	router.HandleFunc("/api/users/{id}", userHandler.UpdateUser).Methods("PUT")
+	router.HandleFunc("/api/users/{id}", userHandler.DeleteUser).Methods("DELETE")
 	log.Printf("Routes registered...")
 
 	// health check handler
@@ -50,9 +50,8 @@ func main() {
 	}).Methods("GET")
 	log.Printf("Health route registered...")
 
-
 	// run server
-	
+
 	port := "8080"
 	server := &http.Server{
 		Addr:         ":" + port,
