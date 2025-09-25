@@ -3,7 +3,7 @@ package main
 import (
 	"log"
 	"net/http"
-	"os"
+	//"os"
 	"time"
 
 	"github.com/firemanm/go_crud/handlers"
@@ -41,19 +41,19 @@ func main() {
 	router.HandleFunc("/users", userHandler.CreateUser).Methods("POST")
 	router.HandleFunc("/users/{id}", userHandler.UpdateUser).Methods("PUT")
 	router.HandleFunc("/users/{id}", userHandler.DeleteUser).Methods("DELETE")
+	log.Printf("Routes registered...")
 
 	// health check handler
 	router.HandleFunc("/health", func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
 		w.Write([]byte("OK"))
 	}).Methods("GET")
+	log.Printf("Health route registered...")
+
 
 	// run server
-	port := os.Getenv("PORT")
-	if port == "" {
-		port = "8080"
-	}
-
+	
+	port := "8080"
 	server := &http.Server{
 		Addr:         ":" + port,
 		Handler:      router,

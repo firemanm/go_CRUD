@@ -51,12 +51,10 @@ docker build -t firemanm/go-crud-app .
 docker push firemanm/go-crud-app 
 
 # deploy app
-kubectl apply -f configmap.yaml - f secret.yaml
-kubectl apply -f deployment.yaml
-kubectl apply -f svc.yaml
+kubectl apply -f configmap.yaml, -f secret.yaml, -f deployment.yaml, apply -f svc.yaml, -f ingress.yaml
 
+# enable before
 minikube addons enable ingress
-kubectl apply -f ingress.yaml
 
 minikube tunnel
 

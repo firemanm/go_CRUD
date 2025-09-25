@@ -6,6 +6,4 @@ data:
   DB_HOST: "my-postgresql.default.svc.cluster.local"
   DB_PORT: "5432"
   DB_NAME: mydb1
-  DB_SSLMODE: "disable"
-  DB_PORT: "5432"
-    
+  DB_SSLMODE: "disable"    

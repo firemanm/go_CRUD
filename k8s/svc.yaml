@@ -9,5 +9,5 @@ spec:
   - port: 80
     targetPort: 8080
   selector:
-    app: go-crud-app-svc
+    app: go-crud-app
   type: ClusterIP
