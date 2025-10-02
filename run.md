@@ -50,7 +50,14 @@ psql -h localhost -U user00 -d mydb1
 
 # build and push
 docker build -t firemanm/go-crud-app .
+
+# !! for CentOS
+docker login -u firemanm registry-1.docker.io
+
 docker push firemanm/go-crud-app 
+
+# !! rerun deploy
+kubectl rollout restart deployment/go-crud-app
 
 # deploy app
 kubectl apply -f configmap.yaml, -f secret.yaml, -f deployment.yaml, apply -f svc.yaml, -f ingress.yaml

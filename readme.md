@@ -72,6 +72,40 @@ curl -X DELETE http://$(minikube ip)/users/1 \
 
 curl -H "Host: arch.homework" http://$(minikube ip)/users
 
+# next lab - prometheus metrics
+# install prometheus
+
+helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+helm repo update
+helm install prometheus prometheus-community/prometheus
+kubectl expose service prometheus-server --type=NodePort --target-port=9090 --name=prometheus-server-np
+
+# check it running
+kubectl get pods -l app.kubernetes.io/instance=prometheus
+
+# open web
+minikube service prometheus-server-np
+
+# Install Grafana
+helm repo add grafana https://grafana.github.io/helm-charts
+helm install grafana grafana/grafana
+kubectl expose service grafana --type=NodePort --target-port=3000 --name=grafana-np
+# retreive grafana password (user: admin)
+kubectl get secret --namespace default grafana -o jsonpath="{.data.admin-password}" | base64 --decode ; echo 
+
+# open it
+minikube service grafana-np
+
+# add app to scraping (modify deploy file)
+
+
+
+# Configure Prometheus Datasource (Connections > Datasources)
+# The URL for our Prometheus instance is the name of the service http://prometheus-server:80.
+
+# Kubernetes Dashboard bootstrap
+# Create (+) > Import section to Import via grafana.com and we get 15661 (K8S Dashboard)
+
 
 
 
